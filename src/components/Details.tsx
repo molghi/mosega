@@ -1,17 +1,13 @@
-import { useContext } from "react";
+import { useContext, useState, useEffect } from "react";
 import MyContext from "../context/MyContext";
-import getGameMarkup from "../utils/getGameMarkup";
-import getSerieMarkup from "../utils/getSerieMarkup";
-import getMovieMarkup from "../utils/getMovieMarkup";
+import getDetailsGameMarkup from "../utils/getDetailsGameMarkup";
+import getDetailsSerieMarkup from "../utils/getDetailsSerieMarkup";
+import getDetailsMovieMarkup from "../utils/getDetailsMovieMarkup";
 
 const Details = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
     const { details, showType, setDetails, gameScreens } = context;
-
-    console.log(gameScreens);
-
-    console.log(details);
 
     let theElement: JSX.Element | null = null;
 
@@ -25,7 +21,6 @@ const Details = () => {
         year: "numeric",
         month: "long", // full month name
         day: "numeric",
-        // weekday: "long", // optional, e.g., "Monday"
     });
 
     // Format budget
@@ -43,16 +38,19 @@ const Details = () => {
     };
 
     // Additional screenshots for the game
-    const additionalScreens = gameScreens?.find((x: any) => x.slug === details.slug).short_screenshots;
+    const [additionalScreens, setAdditionalScreens] = useState();
+    useEffect(() => {
+        setAdditionalScreens(gameScreens.find((x: any) => x.slug === details.slug)?.short_screenshots);
+    }, [gameScreens]);
 
     // Show movie
-    if (showType === 0) theElement = getMovieMarkup(details, formatRuntime, formatDate, formatBudget);
+    if (showType === 0) theElement = getDetailsMovieMarkup(details, formatRuntime, formatDate, formatBudget);
 
     // Show series
-    if (showType === 1) theElement = getSerieMarkup(details);
+    if (showType === 1) theElement = getDetailsSerieMarkup(details);
 
     // Show game
-    if (showType === 2) theElement = getGameMarkup(details, additionalScreens);
+    if (showType === 2) theElement = getDetailsGameMarkup(details, additionalScreens);
 
     return (
         <section className="max-w-[1400px] px-5 mx-auto py-6 pb-60">

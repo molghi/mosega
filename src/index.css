@@ -10,3 +10,12 @@
         transform: rotate(360deg);
     }
 }
+
+.swiper-pagination-bullet {
+    background-color: white !important;
+    opacity: 1;
+}
+
+.swiper-pagination {
+    bottom: -5px !important;
+}

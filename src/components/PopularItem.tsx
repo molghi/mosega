@@ -1,0 +1,50 @@
+import getResultMovieMarkup from "../utils/getResultMovieMarkup";
+import getResultSerieMarkup from "../utils/getResultSerieMarkup";
+import getResultGameMarkup from "../utils/getResultGameMarkup";
+import { tmdbMovies, tmdbSeries } from "../utils/genreInterpreter";
+import { useContext } from "react";
+import MyContext from "../context/MyContext";
+import fetchMovie from "../utils/fetchMovie";
+import fetchSerie from "../utils/fetchSerie";
+import fetchGame from "../utils/fetchGame";
+
+const PopularItem = ({ type, data }: { type: string; data: any }) => {
+    const context = useContext(MyContext);
+    if (!context) throw new Error("Error using Context"); // Null check
+    const { setDetails, setIsLoading, setShowType, setGameScreens } = context;
+
+    const apiKeyMoviesSeries: string = import.meta.env.VITE_TMDB_API_KEY;
+    const apiKeyGames: string = import.meta.env.VITE_RAWG_IO_API_KEY;
+
+    let resultEl = null;
+    if (type === "movie") resultEl = getResultMovieMarkup(data, tmdbMovies);
+    if (type === "serie") resultEl = getResultSerieMarkup(data, tmdbSeries);
+    if (type === "game") resultEl = getResultGameMarkup(data);
+
+    // Fetch details on click
+    const fetchDetails = async () => {
+        let res;
+        setIsLoading(true);
+        setShowType(type === "movie" ? 0 : type === "serie" ? 1 : 2);
+        if (type === "movie") res = await fetchMovie(apiKeyMoviesSeries, data.id); // It is a movie
+        if (type === "serie") res = await fetchSerie(apiKeyMoviesSeries, data.id); // It is a serie
+        if (type === "game") {
+            res = await fetchGame(apiKeyGames, data.slug); // It is a game
+            const gameScreens: any = data.short_screenshots.map((screenObj: any) => screenObj);
+            setGameScreens(gameScreens);
+        }
+        setIsLoading(false);
+        setDetails(res);
+    };
+
+    return (
+        <div
+            onClick={fetchDetails}
+            className="bg-base-200 p-4 rounded shadow cursor-pointer transition duration-300 border-2 border-transparent hover:border-white"
+        >
+            {resultEl}
+        </div>
+    );
+};
+
+export default PopularItem;

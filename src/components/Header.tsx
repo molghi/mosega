@@ -1,6 +1,6 @@
 const Header = () => {
     return (
-        <header className="bg-base-200 mb-7">
+        <header className="bg-base-200 mb-7 relative" style={{ zIndex: 1 }}>
             <div className="max-w-[1200px] mx-auto">
                 <div className="navbar px-1 py-5 sm:py-6 sm:px-4">
                     {/* LOGO / SLOGAN */}

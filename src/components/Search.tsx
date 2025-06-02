@@ -7,10 +7,9 @@ import fetchGames from "../utils/fetchGames";
 const Search = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { setResults, setShowType, showType, setIsLoading } = context;
+    const { setResults, setShowType, showType, setIsLoading, searchTerm, setSearchTerm, setRunnedSearchTerm } = context;
 
     const [activeTab, setActiveTab] = useState<number>(showType); // 0 for Movies, 1 for Series, 2 for Games
-    const [searchTerm, setSearchTerm] = useState<string>("");
     const inputEl = useRef<HTMLInputElement>(null);
 
     const searchOptions: string[] = ["Movies", "Series", "Games"];
@@ -28,9 +27,10 @@ const Search = () => {
         if (activeTab === 1) response = await fetchSeries(apiKeyMoviesSeries, searchTerm); // Fetch series
         if (activeTab === 2) response = await fetchGames(apiKeyGames, searchTerm); // Fetch games
         setIsLoading(false);
-        setResults(response.results);
-        setShowType(activeTab); // To know if fetching movies, series or games
+        setResults(response);
+        setRunnedSearchTerm(searchTerm);
         setSearchTerm("");
+        setShowType(activeTab); // To know if fetching movies, series or games
     };
 
     useEffect(() => {
@@ -39,7 +39,7 @@ const Search = () => {
     }, [activeTab]);
 
     return (
-        <section className="max-w-[1200px] mx-auto px-4 py-6">
+        <section data-name="Search" className="max-w-[1200px] mx-auto px-4 py-6">
             <div className="max-w-2xl mx-auto">
                 <div className="flex space-x-8">
                     {/* TITLE */}

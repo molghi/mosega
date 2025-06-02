@@ -2,8 +2,8 @@ import { createContext, ReactNode, useState } from "react";
 
 // Define types
 interface MyContextType {
-    results: any[];
-    setResults: React.Dispatch<React.SetStateAction<any[]>>;
+    results: any;
+    setResults: React.Dispatch<React.SetStateAction<any>>;
     details: { [key: string]: any };
     setDetails: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
     showType: number;
@@ -12,6 +12,12 @@ interface MyContextType {
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     gameScreens: any;
     setGameScreens: React.Dispatch<React.SetStateAction<any>>;
+    searchTerm: string;
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+    runnedSearchTerm: string;
+    setRunnedSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+    popularNow: any;
+    setPopularNow: React.Dispatch<React.SetStateAction<any>>;
 }
 
 // Create Context
@@ -29,6 +35,9 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
     const [details, setDetails] = useState<{ [key: string]: any }>({});
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [gameScreens, setGameScreens] = useState<any>(null);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [runnedSearchTerm, setRunnedSearchTerm] = useState<string>("");
+    const [popularNow, setPopularNow] = useState<any>(null);
 
     return (
         <MyContext.Provider
@@ -43,6 +52,12 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
                 setIsLoading,
                 gameScreens,
                 setGameScreens,
+                searchTerm,
+                setSearchTerm,
+                runnedSearchTerm,
+                setRunnedSearchTerm,
+                popularNow,
+                setPopularNow,
             }}
         >
             {children}
