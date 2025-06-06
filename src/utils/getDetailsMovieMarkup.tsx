@@ -1,18 +1,71 @@
-const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) => string, formatDate: any, formatBudget: any) => {
-    let released = null;
+import React from "react";
+import { useNavigate, Link } from "react-router-dom";
+import fetchCastCrew from "./fetchCastCrew";
+import fetchByGenre from "./fetchByGenre";
+import { tmdbMovies } from "./genreInterpreter";
+
+const setReleased = (details: any) => {
     if (new Date(details.release_date).getFullYear() === new Date().getFullYear()) {
-        released = <span className="text-success">(This year)</span>;
+        return <span className="text-success">(This year)</span>;
     } else if (new Date(details.release_date).getFullYear() === new Date().getFullYear() - 1) {
-        released = <span>(Last year)</span>;
+        return <span>(Last year)</span>;
     } else if (new Date(details.release_date).getFullYear() === new Date().getFullYear() + 1) {
-        released = <span className="text-warning">(Next year)</span>;
+        return <span className="text-warning">(Next year)</span>;
     } else {
-        released = <span>(~{new Date().getFullYear() - new Date(details.release_date).getFullYear()} years ago)</span>;
+        return <span>(~{new Date().getFullYear() - new Date(details.release_date).getFullYear()} years ago)</span>;
     }
+};
 
-    const trailers = details.videos.results.filter((x: any) => x.type === "Teaser" || x.type === "Trailer");
-
+const getDetailsMovieMarkup = (
+    details: any,
+    formatRuntime: (runtime: number) => string,
+    formatDate: any,
+    formatBudget: any,
+    isFaved: boolean,
+    setIsFaved: any,
+    isBooked: boolean,
+    setIsBooked: any,
+    setPersonData: any,
+    addOne: any,
+    setResults: any,
+    setIsLoading: any
+) => {
+    const navigate = useNavigate();
+    let released = setReleased(details);
+    const trailers = details?.videos?.results.filter((x: any) => x.type === "Teaser" || x.type === "Trailer");
     const labelStyles = "font-bold opacity-70 text-purple-300";
+
+    const addTo = (where: string) => {
+        const movieObj = {
+            title: details.title,
+            release_date: details.release_date,
+            genres: details.genres,
+            original_language: details.original_language,
+            poster_path: details.poster_path,
+            overview: details.overview,
+            id: details.id,
+            type: "movie",
+        };
+        addOne(where, movieObj, setIsFaved, setIsBooked);
+    };
+
+    const fetchPersonInfo = async (personId: string) => {
+        setIsLoading(true);
+        const data = await fetchCastCrew(import.meta.env.VITE_TMDB_API_KEY, personId);
+        setIsLoading(false);
+        setPersonData(data);
+        navigate(`/personality/${data.name.toLowerCase().replaceAll(" ", "-")}`);
+    };
+
+    const fetchGenre = async (genreId: string) => {
+        setIsLoading(true);
+        const data = await fetchByGenre(import.meta.env.VITE_TMDB_API_KEY, genreId, "movie");
+        setIsLoading(false);
+        setResults(data);
+        navigate(`/genre/${tmdbMovies(+genreId).toLowerCase().replaceAll(" ", "-")}`);
+    };
+
+    // ==========================================================================================
 
     return (
         <>
@@ -39,7 +92,7 @@ const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) =>
                         {/* hover:opacity-0 transition-all duration-200 */}
                         {details.poster_path ? (
                             <img
-                                className="w-[100%] h-[100%] object-cover bg-black"
+                                className="max-w-[100%] w-[100%] h-[100%] object-cover bg-black"
                                 src={"https://image.tmdb.org/t/p/original/" + details.poster_path}
                                 alt="Poster"
                             />
@@ -55,7 +108,36 @@ const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) =>
                 </div>
 
                 {/* RIGHT COLUMN */}
-                <div className="w-2/3 p-4 pt-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                <div className="relative w-2/3 p-4 pt-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                    {/* ACTION BTNS */}
+                    <div className="flex gap-4 flex-col items-end absolute top-10 right-10">
+                        {!isFaved ? (
+                            <button
+                                onClick={() => addTo("faves")}
+                                className="btn btn-secondary opacity-50 hover:opacity-100 transition duration-200"
+                            >
+                                Add to Favorites
+                            </button>
+                        ) : (
+                            <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                                In Favorites
+                            </div>
+                        )}
+
+                        {!isBooked ? (
+                            <button
+                                onClick={() => addTo("bookmarks")}
+                                className="btn btn-primary opacity-50 hover:opacity-100 transition duration-200"
+                            >
+                                Add to Bookmarked
+                            </button>
+                        ) : (
+                            <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                                In Bookmarks
+                            </div>
+                        )}
+                    </div>
+
                     {/* TITLE */}
                     {details.title && (
                         <div className="p-4 pb-1 pt-2 rounded">
@@ -66,7 +148,15 @@ const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) =>
                     {/* GENRES */}
                     {details.genres && details.genres.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
-                            <span className={labelStyles}>Genres:</span> {details.genres.map((x: any) => x.name).join(", ")}
+                            <span className={labelStyles}>Genres:</span>{" "}
+                            {details.genres.map((x: any, i: number) => (
+                                <React.Fragment key={i}>
+                                    <Link to="" className="underline hover:no-underline" onClick={() => fetchGenre(x.id)}>
+                                        {x.name}
+                                    </Link>
+                                    {i === details.genres.length - 1 ? "" : ", "}
+                                </React.Fragment>
+                            ))}
                         </div>
                     )}
 
@@ -102,24 +192,34 @@ const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) =>
                     )}
 
                     {/* DIRECTOR */}
-                    {details.cast.crew && details.cast.crew.length > 0 && (
+                    {details?.cast?.crew && details?.cast?.crew.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Directors: </span>
                             {details.cast.crew
                                 .filter((x: any) => x.job === "Director")
                                 .map((x: any, i: number, a: any[]) => (
-                                    <span key={i}>{x.name}</span>
+                                    <Link
+                                        to=""
+                                        className="underline hover:no-underline"
+                                        onClick={() => fetchPersonInfo(x.id)}
+                                        key={i}
+                                    >
+                                        {x.name}
+                                    </Link>
                                 ))}
                         </div>
                     )}
 
                     {/* CAST */}
-                    {details.cast.cast && details.cast.cast.length > 0 && (
+                    {details?.cast?.cast && details?.cast?.cast.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Cast: </span>
                             {details.cast.cast.map((x: any, i: number, a: any) => (
                                 <span key={i}>
-                                    {x.name} <span className="opacity-50">({x.character || "?"})</span>
+                                    <Link to="" onClick={() => fetchPersonInfo(x.id)} className="underline hover:no-underline">
+                                        {x.name}
+                                    </Link>{" "}
+                                    <span className="opacity-50">({x.character || "?"})</span>
                                     {i === a.length - 1 ? "" : ", "}
                                 </span>
                             ))}
@@ -209,7 +309,7 @@ const getDetailsMovieMarkup = (details: any, formatRuntime: (runtime: number) =>
             </div>
 
             {/* SCREENSHOTS */}
-            {details.screenshots.backdrops && details.screenshots.backdrops.length > 0 && (
+            {details?.screenshots?.backdrops && details?.screenshots?.backdrops.length > 0 && (
                 <div className="relative" style={{ zIndex: 1 }}>
                     <h3 className="text-5xl font-bold mt-40 mb-20">Gallery</h3>
                     <div className="grid grid-cols-4 gap-4">

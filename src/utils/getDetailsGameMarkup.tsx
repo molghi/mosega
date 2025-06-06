@@ -1,7 +1,31 @@
 import DOMPurify from "dompurify";
 
-const getDetailsGameMarkup = (details: any, additionalScreens: any) => {
+const getDetailsGameMarkup = (
+    details: any,
+    additionalScreens: any,
+    isFaved: boolean,
+    setIsFaved: any,
+    isBooked: boolean,
+    setIsBooked: any,
+    addOne: any
+) => {
     const screens = additionalScreens ? additionalScreens : [];
+
+    const addTo = (where: string) => {
+        console.log(details);
+
+        const gameObj = {
+            name: details.name,
+            released: details.released,
+            genres: details.genres,
+            background_image: details.background_image,
+            description_raw: details.description_raw,
+            id: details.id,
+            slug: details.slug,
+            type: "game",
+        };
+        addOne(where, gameObj, setIsFaved, setIsBooked);
+    };
 
     let allScreens = [...details.results, ...screens].map((x) => x.image);
     allScreens = [...new Set(allScreens)];
@@ -18,6 +42,36 @@ const getDetailsGameMarkup = (details: any, additionalScreens: any) => {
     }
 
     const labelStyles = "font-bold opacity-70 text-purple-300";
+
+    const buttons = (
+        <div className="flex gap-4 flex-col items-end absolute top-10 right-10">
+            {!isFaved ? (
+                <button
+                    onClick={() => addTo("faves")}
+                    className="btn btn-secondary opacity-50 hover:opacity-100 transition duration-200"
+                >
+                    Add to Favorites
+                </button>
+            ) : (
+                <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                    In Favorites
+                </div>
+            )}
+
+            {!isBooked ? (
+                <button
+                    onClick={() => addTo("bookmarks")}
+                    className="btn btn-primary opacity-50 hover:opacity-100 transition duration-200"
+                >
+                    Add to Bookmarked
+                </button>
+            ) : (
+                <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                    In Bookmarks
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <>
@@ -57,6 +111,8 @@ const getDetailsGameMarkup = (details: any, additionalScreens: any) => {
 
                 {/* RIGHT COL */}
                 <div className="w-2/3 p-4 pt-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                    {buttons}
+
                     {/* TITLE */}
                     {details.name && (
                         <div className="p-4 pb-1 pt-2 rounded">

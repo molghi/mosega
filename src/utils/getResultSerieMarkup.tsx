@@ -3,7 +3,8 @@ const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
         <>
             {/* POSTER */}
             <div
-                className="bg-base-200 p-4 rounded shadow min-w-[215px] h-[325px]"
+                className="bg-base-200 p-4 rounded shadow"
+                // min-w-[215px] h-[325px]
                 title={data.overview ? `Overview:\n${data.overview}` : ""}
             >
                 {data.poster_path ? (

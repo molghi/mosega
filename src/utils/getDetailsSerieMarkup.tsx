@@ -1,56 +1,107 @@
-import { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import fetchCastCrew from "./fetchCastCrew";
 
-const getDetailsSerieMarkup = (details: any) => {
-    console.log(details);
-
-    let firstAir = null;
+const getFirstAir = (details: any) => {
     if (new Date(details.first_air_date).getFullYear() === new Date().getFullYear()) {
-        firstAir = <span className="text-success">(This year)</span>;
+        return <span className="text-success">(This year)</span>;
     } else if (new Date(details.first_air_date).getFullYear() === new Date().getFullYear() + 1) {
-        firstAir = <span>(Next year)</span>;
+        return <span>(Next year)</span>;
     } else if (new Date(details.first_air_date).getFullYear() === new Date().getFullYear() - 1) {
-        firstAir = <span className="text-warning">(Last year)</span>;
-    } else firstAir = <span>(~{new Date().getFullYear() - new Date(details.first_air_date).getFullYear()} years ago)</span>;
+        return <span className="text-warning">(Last year)</span>;
+    } else {
+        return <span>(~{new Date().getFullYear() - new Date(details.first_air_date).getFullYear()} years ago)</span>;
+    }
+};
 
-    let lastAir = null;
+const getLastAir = (details: any) => {
     if (new Date(details.last_air_date).getFullYear() === new Date().getFullYear()) {
-        lastAir = <span className="text-success">(This year)</span>;
+        return <span className="text-success">(This year)</span>;
     } else if (new Date(details.last_air_date).getFullYear() === new Date().getFullYear() + 1) {
-        lastAir = <span>(Next year)</span>;
+        return <span>(Next year)</span>;
     } else if (new Date(details.last_air_date).getFullYear() === new Date().getFullYear() - 1) {
-        lastAir = <span className="text-warning">(Last year)</span>;
-    } else lastAir = <span>(~{new Date().getFullYear() - new Date(details.last_air_date).getFullYear()} years ago)</span>;
+        return <span className="text-warning">(Last year)</span>;
+    } else {
+        return <span>(~{new Date().getFullYear() - new Date(details.last_air_date).getFullYear()} years ago)</span>;
+    }
+};
 
+// =================================================================================
+
+const getDetailsSerieMarkup = (
+    details: any,
+    epsData: any,
+    isFaved: boolean,
+    setIsFaved: any,
+    isBooked: boolean,
+    setIsBooked: any,
+    addOne: any,
+    setPersonData: any
+) => {
+    let firstAir = getFirstAir(details);
+    let lastAir = getLastAir(details);
     const labelStyles = "font-bold opacity-70 text-purple-300";
-
     const trailers = details.videos.results.filter((x: any) => x.type === "Teaser" || x.type === "Trailer");
+    const navigate = useNavigate();
 
-    const [epsData, setEpsData] = useState<any>([]);
-
-    useEffect(() => {
-        if (details.episodesData && details.episodesData.length > 0) {
-            const formatted = details.episodesData.map((season: any) =>
-                season.episodes.map((episode: any) => `${episode.episode_number}. ${episode.name} (${episode.runtime}m)`)
-            );
-            console.log(formatted);
-            setEpsData(formatted);
-        }
-    }, [details.episodesData]);
-
-    const getEpisodesData = (serie: any): any => {
-        console.log(serie);
-
-        return serie.episodesData
-            .find((seasonObj: any) => seasonObj.name === serie.name)
-            .map((z: any) => z.episodes.map((w: any, q: any) => w.episode_number));
+    const addTo = (where: string) => {
+        const seriesObj = {
+            name: details.name,
+            first_air_date: details.first_air_date,
+            genres: details.genres,
+            original_language: details.original_language,
+            poster_path: details.poster_path,
+            overview: details.overview,
+            id: details.id,
+            type: "series",
+        };
+        addOne(where, seriesObj, setIsFaved, setIsBooked);
     };
 
     const getTotalHours = (season: any) => {
-        const res = Math.round(
-            details.episodesData[season.season_number - 1]?.episodes.reduce((sum: number, ep: any) => sum + ep.runtime, 0) / 60
-        );
-        return res;
+        const epsObjArr = details.episodesData[season.season_number - 1]?.episodes;
+        const runtimes = epsObjArr.map((x: any) => x.runtime).filter((x: any) => x);
+        if (runtimes.length === 0) return 0;
+        const inHours = Math.round(runtimes.reduce((x: number, y: number) => x + y, 0) / 60);
+        return inHours;
     };
+
+    const fetchPersonInfo = async (personId: string) => {
+        const data = await fetchCastCrew(import.meta.env.VITE_TMDB_API_KEY, personId);
+        setPersonData(data);
+        navigate(`/personality/${data.name.toLowerCase().replaceAll(" ", "-")}`);
+    };
+
+    const buttonsMarkup = (
+        <div className="flex gap-4 flex-col items-end absolute top-10 right-10">
+            {!isFaved ? (
+                <button
+                    onClick={() => addTo("faves")}
+                    className="btn btn-secondary opacity-50 hover:opacity-100 transition duration-200"
+                >
+                    Add to Favorites
+                </button>
+            ) : (
+                <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                    In Favorites
+                </div>
+            )}
+
+            {!isBooked ? (
+                <button
+                    onClick={() => addTo("bookmarks")}
+                    className="btn btn-primary opacity-50 hover:opacity-100 transition duration-200"
+                >
+                    Add to Bookmarked
+                </button>
+            ) : (
+                <div className="p-2 px-4 border rounded-md text-sm text-center opacity-50 transition duration-200 hover:opacity-100">
+                    In Bookmarks
+                </div>
+            )}
+        </div>
+    );
+
+    // =================================================================================
 
     return (
         <>
@@ -58,7 +109,7 @@ const getDetailsSerieMarkup = (details: any) => {
             <div
                 className="fixed top-0 left-0 w-screen h-screen bg-cover bg-center opacity-10 pointer-events-none"
                 style={{
-                    backgroundImage: `url('https://image.tmdb.org/t/p/original/${details.backdrop_path}}')`,
+                    backgroundImage: `url('https://image.tmdb.org/t/p/original/${details.backdrop_path}')`,
                 }}
             ></div>
 
@@ -95,6 +146,8 @@ const getDetailsSerieMarkup = (details: any) => {
 
                 {/* RIGHT COLUMN */}
                 <div className="w-2/3 p-4 py-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                    {buttonsMarkup}
+
                     {/* TITLE */}
                     {details.name && (
                         <div className="p-4 pb-1 pt-2 rounded">
@@ -108,11 +161,6 @@ const getDetailsSerieMarkup = (details: any) => {
                             <span className={labelStyles}>Genres:</span> {details.genres.map((x: any) => x.name).join(", ")}
                         </div>
                     )}
-
-                    {/* RUNTIME */}
-                    {/* <div className="p-4 pb-1 pt-2 rounded">
-                            <span className={labelStyles}>Runtime:</span> {formatRuntime(details.runtime)}
-                        </div> */}
 
                     {/* LANGUAGE */}
                     {details.original_language && (
@@ -130,13 +178,6 @@ const getDetailsSerieMarkup = (details: any) => {
                             </div>
                         ))}
 
-                    {/* RELEASE DATE */}
-                    {/* <div className="p-4 pb-1 pt-2 rounded">
-                            <span className={labelStyles}>Release Date:</span> {formatDate.format(new Date(details.release_date))}{" "}
-                            (~
-                            {new Date().getFullYear() - new Date(details.release_date).getFullYear()} years ago)
-                        </div> */}
-
                     {/* ORIGIN COUNTRY */}
                     {details.origin_country && details.origin_country.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
@@ -148,7 +189,11 @@ const getDetailsSerieMarkup = (details: any) => {
                     {details.created_by && details.created_by.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Created By:</span>{" "}
-                            {details.created_by.map((x: any) => x.name).join(", ")}
+                            {details.created_by.map((x: any) => (
+                                <Link to="" onClick={() => fetchPersonInfo(x.id)} className="underline hover:no-underline">
+                                    {x.name}
+                                </Link>
+                            ))}
                         </div>
                     )}
 
@@ -158,7 +203,10 @@ const getDetailsSerieMarkup = (details: any) => {
                             <span className={labelStyles}>Cast: </span>
                             {details.cast.cast.map((x: any, i: number, a: any) => (
                                 <span key={i}>
-                                    {x.name} <span className="opacity-50">({x.character})</span>
+                                    <Link to="" onClick={() => fetchPersonInfo(x.id)} className="underline hover:no-underline">
+                                        {x.name}
+                                    </Link>{" "}
+                                    <span className="opacity-50">({x.character})</span>
                                     {i === a.length - 1 ? "" : ", "}
                                 </span>
                             ))}
@@ -189,15 +237,17 @@ const getDetailsSerieMarkup = (details: any) => {
                     )}
 
                     {/* LAST EPISODE */}
-                    {details.last_air_date && (
+                    {details.last_air_date ? (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Last Episode Air Date: </span>
                             {details.last_air_date} {lastAir}
                         </div>
+                    ) : (
+                        ""
                     )}
 
                     {/* RATING */}
-                    {details.vote_average && (
+                    {details.vote_average ? (
                         <div
                             className="p-4 pb-1 pt-2 rounded"
                             title={`Average Rating: ${details.vote_average.toFixed(1)}/10\nVote Count: ${details.vote_count}`}
@@ -209,6 +259,8 @@ const getDetailsSerieMarkup = (details: any) => {
                                 : details.vote_count.toString().slice(0, -3) + "K votes"}
                             )
                         </div>
+                    ) : (
+                        ""
                     )}
 
                     {/* OVERVIEW */}
@@ -280,17 +332,21 @@ const getDetailsSerieMarkup = (details: any) => {
                                 <div className="my-3">
                                     <span className={labelStyles}>Episodes:</span>{" "}
                                     <span>{season.episode_count ? season.episode_count : "To Be Announced..."}</span>
-                                    {epsData.length > 0 && !isNaN(getTotalHours(season)) && (
+                                    {epsData.length > 0 && !isNaN(getTotalHours(season)) ? (
                                         <span> ({getTotalHours(season)} total hours)</span>
+                                    ) : (
+                                        ""
                                     )}
                                 </div>
 
-                                {epsData.length > 0 && (
+                                {epsData.length > 0 ? (
                                     <div>
                                         {epsData[season.season_number - 1]?.map((ep: any, i: number) => (
-                                            <div key={i}>{ep}</div>
+                                            <div key={i}>{ep.replace(" (nullm)", "")}</div>
                                         ))}
                                     </div>
+                                ) : (
+                                    ""
                                 )}
 
                                 {season.overview && (

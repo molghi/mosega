@@ -6,6 +6,8 @@ interface MyContextType {
     setResults: React.Dispatch<React.SetStateAction<any>>;
     details: { [key: string]: any };
     setDetails: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+    personData: { [key: string]: any };
+    setPersonData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
     showType: number;
     setShowType: React.Dispatch<React.SetStateAction<number>>;
     isLoading: boolean;
@@ -18,6 +20,18 @@ interface MyContextType {
     setRunnedSearchTerm: React.Dispatch<React.SetStateAction<string>>;
     popularNow: any;
     setPopularNow: React.Dispatch<React.SetStateAction<any>>;
+    favorited: any[];
+    setFavorited: React.Dispatch<React.SetStateAction<any[]>>;
+    bookmarked: any[];
+    setBookmarked: React.Dispatch<React.SetStateAction<any[]>>;
+    favoritesShown: boolean;
+    setFavoritesShown: React.Dispatch<React.SetStateAction<boolean>>;
+    bookmarkedShown: boolean;
+    setBookmarkedShown: React.Dispatch<React.SetStateAction<boolean>>;
+    localStorageFavesKey: string;
+    localStorageBookmarkedKey: string;
+    sluggify: (value: string) => string;
+    addOne: (where: string, dataObject: any, setIsFaved: any, setIsBooked: any) => void;
 }
 
 // Create Context
@@ -30,14 +44,58 @@ interface ContextProviderProps {
 
 // Context Provider
 export const ContextProvider = ({ children }: ContextProviderProps) => {
+    const localStorageFavesKey: string = `mosega_faves`;
+    const localStorageBookmarkedKey: string = `mosega_bookmarked`;
+
+    const favesFromLS: any = JSON.parse(localStorage.getItem(localStorageFavesKey) ?? "[]");
+    const bookmarksFromLS: any = JSON.parse(localStorage.getItem(localStorageBookmarkedKey) ?? "[]");
+
     const [results, setResults] = useState<any[]>([]); // type: array of objects
-    const [showType, setShowType] = useState<number>(0); // 0 for Movies, 1 for Series, 2 for Games
     const [details, setDetails] = useState<{ [key: string]: any }>({});
+    const [personData, setPersonData] = useState<{ [key: string]: any }>({});
+    const [showType, setShowType] = useState<number>(0); // 0 for Movies, 1 for Series, 2 for Games
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [gameScreens, setGameScreens] = useState<any>(null);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [runnedSearchTerm, setRunnedSearchTerm] = useState<string>("");
     const [popularNow, setPopularNow] = useState<any>(null);
+    const [favorited, setFavorited] = useState<any[]>(favesFromLS);
+    const [bookmarked, setBookmarked] = useState<any[]>(bookmarksFromLS);
+    const [favoritesShown, setFavoritesShown] = useState<boolean>(false);
+    const [bookmarkedShown, setBookmarkedShown] = useState<boolean>(false);
+
+    const sluggify = (value: string): string =>
+        value
+            ? value
+                  .replace(/[^a-zA-Z0-9\s]/g, "")
+                  .toLowerCase()
+                  .split(" ")
+                  .join("-")
+            : "";
+
+    const addOne = (where: string, dataObject: any, setIsFaved: any, setIsBooked: any) => {
+        if (!dataObject || !dataObject.id) return;
+
+        if (where === "faves") {
+            const alreadyFaved = favorited.some((item: any) => item.id === dataObject.id);
+            if (!alreadyFaved) {
+                const newFiles = [...favorited, dataObject];
+                setFavorited(newFiles);
+                localStorage.setItem(localStorageFavesKey, JSON.stringify(newFiles));
+            }
+            setIsFaved(true);
+        }
+
+        if (where === "bookmarks") {
+            const alreadyBooked = bookmarked.some((item: any) => item.id === dataObject.id);
+            if (!alreadyBooked) {
+                const newFiles = [...bookmarked, dataObject];
+                setBookmarked(newFiles);
+                localStorage.setItem(localStorageBookmarkedKey, JSON.stringify(newFiles));
+            }
+            setIsBooked(true);
+        }
+    };
 
     return (
         <MyContext.Provider
@@ -58,6 +116,20 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
                 setRunnedSearchTerm,
                 popularNow,
                 setPopularNow,
+                favorited,
+                setFavorited,
+                bookmarked,
+                setBookmarked,
+                favoritesShown,
+                setFavoritesShown,
+                bookmarkedShown,
+                setBookmarkedShown,
+                localStorageFavesKey,
+                localStorageBookmarkedKey,
+                sluggify,
+                personData,
+                setPersonData,
+                addOne,
             }}
         >
             {children}

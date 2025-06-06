@@ -1,19 +1,24 @@
 import "./index.css";
 import Header from "./components/Header";
-import Search from "./components/Search";
-import Results from "./components/Results";
-import Details from "./components/Details";
 import { useContext, useEffect } from "react";
 import MyContext from "./context/MyContext";
 import fetchPopularMoviesSeries from "./utils/fetchPopularMoviesSeries";
 import fetchPopularGames from "./utils/fetchPopularGames";
-import PopularNow from "./components/PopularNow";
 import spinnerImg from "./img/spinner.png";
+import { Routes, Route } from "react-router-dom";
+import Homepage from "./pages/Homepage";
+import ResultsPage from "./pages/ResultsPage";
+import DetailsPage from "./pages/DetailsPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import BookmarkedPage from "./pages/BookmarkedPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import Personality from "./components/Personality";
+import Genre from "./components/Genre";
 
 function App() {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { details, isLoading, setPopularNow, popularNow } = context;
+    const { isLoading, setPopularNow } = context;
 
     const apiKeyMoviesSeries: string = import.meta.env.VITE_TMDB_API_KEY;
     const apiKeyGames: string = import.meta.env.VITE_RAWG_IO_API_KEY;
@@ -31,12 +36,18 @@ function App() {
         <>
             <Header />
 
-            {Object.keys(details).length === 0 && <Search />}
-            {Object.keys(details).length === 0 && <Results />}
-            {Object.keys(details).length > 0 && <Details />}
+            <Routes>
+                <Route index element={<Homepage />} />
+                <Route path="/results/:type/:term" element={<ResultsPage />} />
+                <Route path="/details/:term" element={<DetailsPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
+                <Route path="/bookmarked" element={<BookmarkedPage />} />
+                <Route path="/personality/:name" element={<Personality />} />
+                <Route path="/genre/:name" element={<Genre />} />
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
 
-            {popularNow && Object.keys(popularNow).length > 0 && Object.keys(details).length === 0 && <PopularNow />}
-
+            {/* LOADING SPINNER */}
             {isLoading && (
                 <div className="fixed top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                     <img

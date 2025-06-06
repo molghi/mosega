@@ -3,11 +3,15 @@ import MyContext from "../context/MyContext";
 import fetchMovies from "../utils/fetchMovies";
 import fetchSeries from "../utils/fetchSeries";
 import fetchGames from "../utils/fetchGames";
+import { useNavigate } from "react-router-dom";
 
 const Search = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { setResults, setShowType, showType, setIsLoading, searchTerm, setSearchTerm, setRunnedSearchTerm } = context;
+    const { setResults, results, setShowType, showType, setIsLoading, searchTerm, setSearchTerm, setRunnedSearchTerm, sluggify } =
+        context;
+
+    const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState<number>(showType); // 0 for Movies, 1 for Series, 2 for Games
     const inputEl = useRef<HTMLInputElement>(null);
@@ -21,16 +25,26 @@ const Search = () => {
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!searchTerm.trim()) return;
-        let response;
+        let response, type;
         setIsLoading(true);
-        if (activeTab === 0) response = await fetchMovies(apiKeyMoviesSeries, searchTerm); // Fetch movies
-        if (activeTab === 1) response = await fetchSeries(apiKeyMoviesSeries, searchTerm); // Fetch series
-        if (activeTab === 2) response = await fetchGames(apiKeyGames, searchTerm); // Fetch games
+        if (activeTab === 0) {
+            response = await fetchMovies(apiKeyMoviesSeries, searchTerm); // Fetch movies
+            type = "movie";
+        }
+        if (activeTab === 1) {
+            response = await fetchSeries(apiKeyMoviesSeries, searchTerm); // Fetch series
+            type = "serie";
+        }
+        if (activeTab === 2) {
+            response = await fetchGames(apiKeyGames, searchTerm); // Fetch games
+            type = "game";
+        }
         setIsLoading(false);
         setResults(response);
         setRunnedSearchTerm(searchTerm);
         setSearchTerm("");
         setShowType(activeTab); // To know if fetching movies, series or games
+        navigate(`/results/${type}s/${sluggify(searchTerm)}`); // Show Results page
     };
 
     useEffect(() => {

@@ -7,11 +7,14 @@ import MyContext from "../context/MyContext";
 import fetchMovie from "../utils/fetchMovie";
 import fetchSerie from "../utils/fetchSerie";
 import fetchGame from "../utils/fetchGame";
+import { useNavigate } from "react-router-dom";
 
 const PopularItem = ({ type, data }: { type: string; data: any }) => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { setDetails, setIsLoading, setShowType, setGameScreens } = context;
+    const { setDetails, setIsLoading, setShowType, setGameScreens, sluggify } = context;
+
+    const navigate = useNavigate();
 
     const apiKeyMoviesSeries: string = import.meta.env.VITE_TMDB_API_KEY;
     const apiKeyGames: string = import.meta.env.VITE_RAWG_IO_API_KEY;
@@ -35,6 +38,10 @@ const PopularItem = ({ type, data }: { type: string; data: any }) => {
         }
         setIsLoading(false);
         setDetails(res);
+        let name = type === "movie" ? data.title : data.name;
+        let released =
+            type === "movie" ? `${data.release_date}` : type === "serie" ? `${data.first_air_date}` : `${data.released}`;
+        navigate(`/details/${sluggify(name)}-${released.slice(0, 4)}`);
     };
 
     return (

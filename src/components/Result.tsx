@@ -7,6 +7,7 @@ import getResultMovieMarkup from "../utils/getResultMovieMarkup";
 import getResultSerieMarkup from "../utils/getResultSerieMarkup";
 import getResultGameMarkup from "../utils/getResultGameMarkup";
 import MyContext from "../context/MyContext";
+import { useNavigate } from "react-router-dom";
 
 interface ResultTypes {
     [key: string]: any;
@@ -15,7 +16,20 @@ interface ResultTypes {
 const Result = ({ data, showType, setIsLoading, gameScreens }: ResultTypes) => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { setDetails, setGameScreens } = context;
+    const {
+        setDetails,
+        setGameScreens,
+        favoritesShown,
+        setFavoritesShown,
+        bookmarkedShown,
+        setBookmarkedShown,
+        sluggify,
+        setShowType,
+    } = context;
+
+    // console.log(data);
+
+    const navigate = useNavigate();
 
     let resultEl: JSX.Element | null = null;
 
@@ -24,10 +38,8 @@ const Result = ({ data, showType, setIsLoading, gameScreens }: ResultTypes) => {
 
     // It is a movie
     if (showType === 0) resultEl = getResultMovieMarkup(data, tmdbMovies);
-
     // It is a series
     if (showType === 1) resultEl = getResultSerieMarkup(data, tmdbSeries);
-
     // It is a game
     if (showType === 2) resultEl = getResultGameMarkup(data);
 
@@ -41,6 +53,12 @@ const Result = ({ data, showType, setIsLoading, gameScreens }: ResultTypes) => {
         setIsLoading(false);
         setDetails(res);
         setGameScreens(gameScreens);
+        if (favoritesShown) setFavoritesShown(false);
+        if (bookmarkedShown) setBookmarkedShown(false);
+        const titleName = showType === 0 ? data.title : data.name;
+        const titleRelease = showType === 0 ? data.release_date : showType === 1 ? data.first_air_date : data.released;
+        const name = sluggify(titleName) + "-" + titleRelease.slice(0, 4);
+        navigate(`/details/${name}`);
     };
 
     return (
