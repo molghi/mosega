@@ -8,20 +8,30 @@ import { useNavigate } from "react-router-dom";
 const Search = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { setResults, results, setShowType, showType, setIsLoading, searchTerm, setSearchTerm, setRunnedSearchTerm, sluggify } =
-        context;
+    const {
+        setResults,
+        setShowType,
+        showType,
+        setIsLoading,
+        searchTerm,
+        setSearchTerm,
+        setRunnedSearchTerm,
+        sluggify,
+        containerStyles,
+    } = context;
 
     const navigate = useNavigate();
 
     const [activeTab, setActiveTab] = useState<number>(showType); // 0 for Movies, 1 for Series, 2 for Games
     const inputEl = useRef<HTMLInputElement>(null);
 
-    const searchOptions: string[] = ["Movies", "Series", "Games"];
+    const searchOptions: string[] = ["Movies", "Series", "Games"]; // What can be searched for
 
+    // API keys
     const apiKeyMoviesSeries: string = import.meta.env.VITE_TMDB_API_KEY;
     const apiKeyGames: string = import.meta.env.VITE_RAWG_IO_API_KEY;
 
-    // Submit search term and fetch results
+    // Submit form and fetch results
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!searchTerm.trim()) return;
@@ -47,15 +57,15 @@ const Search = () => {
         navigate(`/results/${type}s/${sluggify(searchTerm)}`); // Show Results page
     };
 
+    // Focus form input
     useEffect(() => {
-        // Focus form input
         if (inputEl?.current) inputEl.current.focus();
     }, [activeTab]);
 
     return (
-        <section data-name="Search" className="max-w-[1200px] mx-auto px-4 py-6">
+        <section data-name="Search" className={`${containerStyles} mb-5`}>
             <div className="max-w-2xl mx-auto">
-                <div className="flex space-x-8">
+                <div className="flex flex-col sm:flex-row sm:space-x-8">
                     {/* TITLE */}
                     <h2 className="text-4xl font-bold mb-5">Search</h2>
 
@@ -78,12 +88,12 @@ const Search = () => {
                 </div>
 
                 {/* SEARCH FORM */}
-                <form className="flex space-x-3" onSubmit={submitForm}>
+                <form className="flex flex-col space-y-5 sm:space-y-0 sm:flex-row sm:space-x-3" onSubmit={submitForm}>
                     <input
                         ref={inputEl}
                         type="text"
                         placeholder="Search..."
-                        className="input input-bordered border-2 focus:border-primary focus:outline-none flex-grow"
+                        className="input input-bordered border-2 focus:border-primary focus:outline-none flex-grow w-full"
                         autoFocus
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}

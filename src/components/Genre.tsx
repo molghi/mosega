@@ -6,15 +6,16 @@ import Result from "./Result";
 const Genre = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { results, setIsLoading } = context;
+    const { results, setIsLoading, containerStyles, gridStyles } = context;
 
     const labelStyles = "font-bold opacity-70 text-purple-300";
-    console.log(results);
 
     return (
-        <section data-name="Genre" className="max-w-[1200px] mx-auto px-4 py-6 pb-30">
+        <section data-name="Genre" className={containerStyles}>
+            {/* BIG TITLE */}
             <div className="text-5xl font-bold mb-10">Popular in {tmdbMovies(results.genre)}</div>
 
+            {/* QUICK META: HOW MANY PAGES, HOW MANY RESULTS */}
             <div className="mb-10 flex items-center space-x-10">
                 <div>
                     <span className={labelStyles}>Page:</span>{" "}
@@ -30,7 +31,8 @@ const Genre = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-5 gap-4 pb-60">
+            {/* ITEMS */}
+            <div className={gridStyles}>
                 {results.results.map((res: any) => (
                     <Result key={res.id} data={res} showType={0} setIsLoading={setIsLoading} />
                 ))}

@@ -6,6 +6,9 @@ const fetchPopularGames = async (API_KEY: string) => {
         const url = `https://api.rawg.io/api/games?dates=${yearNow}-${monthNow}-01,${yearNow}-${monthNow}-30&ordering=-added&key=${API_KEY}`;
 
         const resp = await fetch(url);
+
+        if (!resp.ok) throw new Error("Error fetching games");
+
         const resp2 = await resp.json();
 
         return { games: resp2 };

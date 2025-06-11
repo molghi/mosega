@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================== */
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);
@@ -11,6 +13,8 @@
     }
 }
 
+/* =============================================================== */
+
 .swiper-pagination-bullet {
     background-color: white !important;
     opacity: 1;
@@ -18,4 +22,35 @@
 
 .swiper-pagination {
     bottom: -5px !important;
+}
+
+/* =============================================================== */
+
+@keyframes pulseOpacity {
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.pulse {
+    animation: pulseOpacity 0.8s ease-in-out infinite;
+}
+
+/* =============================================================== */
+
+[data-name="Header"] .btn span:nth-child(2) {
+    display: none;
+}
+
+@media (max-width: 450px) {
+    [data-name="Header"] .btn span:nth-child(1) {
+        display: none;
+    }
+    [data-name="Header"] .btn span:nth-child(2) {
+        display: inline-block;
+    }
 }

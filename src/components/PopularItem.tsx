@@ -16,10 +16,13 @@ const PopularItem = ({ type, data }: { type: string; data: any }) => {
 
     const navigate = useNavigate();
 
+    // API keys
     const apiKeyMoviesSeries: string = import.meta.env.VITE_TMDB_API_KEY;
     const apiKeyGames: string = import.meta.env.VITE_RAWG_IO_API_KEY;
 
-    let resultEl = null;
+    let resultEl = null; // Final element to be shown
+
+    // Get the markup of a movie/serie/game
     if (type === "movie") resultEl = getResultMovieMarkup(data, tmdbMovies);
     if (type === "serie") resultEl = getResultSerieMarkup(data, tmdbSeries);
     if (type === "game") resultEl = getResultGameMarkup(data);
@@ -29,25 +32,25 @@ const PopularItem = ({ type, data }: { type: string; data: any }) => {
         let res;
         setIsLoading(true);
         setShowType(type === "movie" ? 0 : type === "serie" ? 1 : 2);
-        if (type === "movie") res = await fetchMovie(apiKeyMoviesSeries, data.id); // It is a movie
-        if (type === "serie") res = await fetchSerie(apiKeyMoviesSeries, data.id); // It is a serie
+        if (type === "movie") res = await fetchMovie(apiKeyMoviesSeries, data.id); // Fetch movie
+        if (type === "serie") res = await fetchSerie(apiKeyMoviesSeries, data.id); // Fetch serie
         if (type === "game") {
-            res = await fetchGame(apiKeyGames, data.slug); // It is a game
+            res = await fetchGame(apiKeyGames, data.slug); // Fetch game
             const gameScreens: any = data.short_screenshots.map((screenObj: any) => screenObj);
             setGameScreens(gameScreens);
         }
         setIsLoading(false);
         setDetails(res);
-        let name = type === "movie" ? data.title : data.name;
+        let name = type === "movie" ? data.title : data.name; // Get name
         let released =
-            type === "movie" ? `${data.release_date}` : type === "serie" ? `${data.first_air_date}` : `${data.released}`;
+            type === "movie" ? `${data.release_date}` : type === "serie" ? `${data.first_air_date}` : `${data.released}`; // Get when released
         navigate(`/details/${sluggify(name)}-${released.slice(0, 4)}`);
     };
 
     return (
         <div
             onClick={fetchDetails}
-            className="bg-base-200 p-4 rounded shadow cursor-pointer transition duration-300 border-2 border-transparent hover:border-white"
+            className="h-[400px] bg-base-200 p-4 rounded cursor-pointer transition duration-300 border-2 border-transparent hover:border-white"
         >
             {resultEl}
         </div>

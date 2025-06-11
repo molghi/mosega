@@ -1,4 +1,6 @@
+import { useContext } from "react";
 import DOMPurify from "dompurify";
+import MyContext from "../context/MyContext";
 
 const setReleased = (details: any) => {
     if (new Date(details.released).getFullYear() === new Date().getFullYear()) {
@@ -12,20 +14,25 @@ const setReleased = (details: any) => {
     }
 };
 
-const getDetailsGameMarkup = (
-    details: any,
-    additionalScreens: any,
-    isFaved: boolean,
-    setIsFaved: any,
-    isBooked: boolean,
-    setIsBooked: any,
-    addOne: any
-) => {
+interface GameDetailsProps {
+    additionalScreens: any;
+    setIsFaved: any;
+    setIsBooked: any;
+    isFaved: boolean;
+    isBooked: boolean;
+}
+
+const GameDetails = ({ additionalScreens, setIsFaved, setIsBooked, isFaved, isBooked }: GameDetailsProps) => {
+    const context = useContext(MyContext);
+    if (!context) throw new Error("Error using Context"); // Null check
+    const { details, addOne, gridStyles } = context;
+
     const screens: any[] = additionalScreens ? additionalScreens : [];
     const addScreens: any[] = details.screenshots ? details.screenshots : [];
     let allScreens: any[] = [...addScreens, ...screens].map((x) => x.image);
     allScreens = [...new Set(allScreens)];
 
+    // Add to faves/bookmarks
     const addTo = (where: string): void => {
         const gameObj = {
             name: details.name,
@@ -45,7 +52,7 @@ const getDetailsGameMarkup = (
     const labelStyles: string = "font-bold opacity-70 text-purple-300";
 
     const buttons = (
-        <div className="flex gap-4 flex-col items-end absolute top-10 right-10">
+        <div className="flex gap-4 justify-center md:justify-start mb-4 md:mb-0 md:flex-col md:items-end md:absolute md:top-10 md:right-10">
             {!isFaved ? (
                 <button
                     onClick={() => addTo("faves")}
@@ -86,14 +93,14 @@ const getDetailsGameMarkup = (
 
             {/* BIG TITLE */}
             {details.name && (
-                <h2 className="text-6xl font-bold my-10">
+                <h2 className="text-4xl md:text-6xl font-bold my-10">
                     {details.name} {!details.name.includes(")") ? `(${details.released?.split("-")[0]})` : ""}
                 </h2>
             )}
 
-            <div className="flex w-full relative" style={{ zIndex: 1 }}>
+            <div className="flex flex-wrap md:flex-nowrap w-full relative" style={{ zIndex: 1 }}>
                 {/* LEFT COL */}
-                <div className="w-1/3 p-4" style={{ backgroundColor: `rgba(0,0,0, 0.5)` }}>
+                <div className="w-full md:w-1/4 lg:w-1/3 p-0 md:p-4" style={{ backgroundColor: `rgba(0,0,0, 0.5)` }}>
                     {/* POSTER */}
                     <div className="p-4 rounded shadow h-full w-full">
                         {details.background_image ? (
@@ -111,7 +118,10 @@ const getDetailsGameMarkup = (
                 </div>
 
                 {/* RIGHT COL */}
-                <div className="w-2/3 p-4 pt-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                <div
+                    className="relative w-full md:w-3/4 lg:w-2/3 p-0 md:p-4 py-8"
+                    style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}
+                >
                     {buttons}
 
                     {/* TITLE */}
@@ -245,9 +255,9 @@ const getDetailsGameMarkup = (
             {allScreens && allScreens.length > 0 && (
                 <div className="relative" style={{ zIndex: 1 }}>
                     <h3 className="text-5xl font-bold mt-40 mb-20">Gallery</h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className={gridStyles}>
                         {allScreens.map((x: string, i: number) => (
-                            <div className="bg-black min-h-[300px] h-auto">
+                            <div key={i} className="bg-black min-h-[300px] h-auto">
                                 <img src={x} alt="game screenshot" className="object-cover w-full h-full" />
                             </div>
                         ))}
@@ -258,4 +268,4 @@ const getDetailsGameMarkup = (
     );
 };
 
-export default getDetailsGameMarkup;
+export default GameDetails;

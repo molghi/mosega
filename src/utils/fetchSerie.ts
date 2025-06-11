@@ -19,13 +19,16 @@ const fetchSerie = async (API_KEY: string, tvId: string) => {
             throw new Error("Fetching serie info failed");
         }
 
-        const resp2 = await Promise.all([resp[0].json(), resp[1].json(), resp[2].json(), resp[3].json(), resp[4].json()]);
+        // const resp2 = await Promise.all([resp[0].json(), resp[1].json(), resp[2].json(), resp[3].json(), resp[4].json()]);
+        const resp2 = await Promise.all(resp.map((x) => x.json()));
 
         // Fetch episodes info
+        // Make an array
         const eps = Array.from(
             { length: resp2[0].number_of_seasons },
             (_, index) => `https://api.themoviedb.org/3/tv/${tvId}/season/${index + 1}?api_key=${API_KEY}`
         );
+
         const respEps = await Promise.all(eps.map((x) => fetch(x)));
         const epsData = await Promise.all(respEps.map((x) => x.json()));
 

@@ -12,12 +12,14 @@ const Homepage = () => {
         <>
             <Search />
 
+            {/* TEXT IF NO RESULTS === UPON APP START/PAGE LOADUP */}
             {results.length === 0 && <div className="italic text-center mt-3 mb-10">Start searching!</div>}
 
+            {/* IF THERE ARE 'POPULAR', SHOW IT --> ELSE, SHOW YOU'RE FETCHING IT */}
             {popularNow && Object.keys(popularNow).length > 0 ? (
                 <PopularNow />
             ) : (
-                <div className="italic text-center text-lg">Fetching this month's populars...</div>
+                <div className="italic text-center text-lg pulse">Fetching this month's popular titles...</div>
             )}
         </>
     );

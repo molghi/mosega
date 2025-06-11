@@ -3,16 +3,13 @@ const fetchGame = async (API_KEY: string, gameSlug: string) => {
         const API_URL = `https://api.rawg.io/api/games/${gameSlug}?key=${API_KEY}`;
         const API_URL_SCREENSHOTS = `https://api.rawg.io/api/games/${gameSlug}/screenshots?key=${API_KEY}`;
 
-        const resp = await fetch(API_URL);
-        if (!resp.ok) throw new Error("Fetching game failed");
+        const resp = await Promise.all([fetch(API_URL), fetch(API_URL_SCREENSHOTS)]);
 
-        const resp2 = await fetch(API_URL_SCREENSHOTS);
-        if (!resp.ok) throw new Error("Fetching screenshots failed");
+        // if (!resp.ok) throw new Error("Fetching game failed");
 
-        const data = await resp.json();
-        const data2 = await resp2.json();
+        const resp2 = await Promise.all(resp.map((x) => x.json()));
 
-        return { ...data, ...data2 };
+        return { ...resp2[0], screenshots: resp2[1].results };
     } catch (error) {
         console.error(error);
     }

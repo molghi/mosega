@@ -12,7 +12,8 @@ const fetchMovie = async (API_KEY: string, movieId: number) => {
             throw new Error("Fetching movie info failed");
         }
 
-        const resp2 = await Promise.all([resp[0].json(), resp[1].json(), resp[2].json(), resp[3].json()]);
+        // const resp2 = await Promise.all([resp[0].json(), resp[1].json(), resp[2].json(), resp[3].json()]);
+        const resp2 = await Promise.all(resp.map((x) => x.json()));
 
         return { ...resp2[0], screenshots: resp2[1], cast: resp2[2], videos: resp2[3] };
     } catch (error) {

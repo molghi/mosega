@@ -1,6 +1,8 @@
+import { useContext, useState } from "react";
+import MyContext from "../context/MyContext";
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { fetchPersonInfo, fetchGenre } from "./smallFetchers";
+import { fetchPersonInfo, fetchGenre } from "../utils/smallFetchers";
 
 const getFirstAir = (details: any) => {
     if (new Date(details.first_air_date).getFullYear() === new Date().getFullYear()) {
@@ -26,32 +28,39 @@ const getLastAir = (details: any) => {
     }
 };
 
-// =================================================================================
+interface SerieDetailsProps {
+    setIsFaved: any;
+    setIsBooked: any;
+    isFaved: boolean;
+    isBooked: boolean;
+    setIsModalOpen: any;
+    setClickedVideo: any;
+    epsData: any;
+}
 
-const getDetailsSerieMarkup = (
-    details: any,
-    epsData: any,
-    isFaved: boolean,
-    setIsFaved: any,
-    isBooked: boolean,
-    setIsBooked: any,
-    addOne: any,
-    setPersonData: any,
-    setIsLoading: any,
-    setResults: any,
-    setClickedVideo: any,
-    setIsModalOpen: any,
-    isHovered: any,
-    setIsHovered: any,
-    hoveredIndex: any,
-    setHoveredIndex: any
-) => {
+const SerieDetails = ({
+    setIsFaved,
+    setIsBooked,
+    isFaved,
+    isBooked,
+    setIsModalOpen,
+    setClickedVideo,
+    epsData,
+}: SerieDetailsProps) => {
+    const context = useContext(MyContext);
+    if (!context) throw new Error("Error using Context"); // Null check
+    const { details, addOne, setIsLoading, setPersonData, setResults, gridStyles } = context;
+
+    const [isHovered, setIsHovered] = useState<string>(""); // For series to show episode screenshot
+    const [hoveredIndex, setHoveredIndex] = useState<any>(null); // For series to show episode screenshot
+
     let firstAir = getFirstAir(details);
     let lastAir = getLastAir(details);
     const labelStyles: string = "font-bold opacity-70 text-purple-300";
     const trailers: any[] = details.videos.results.filter((x: any) => x.type === "Teaser" || x.type === "Trailer");
     const navigate = useNavigate();
 
+    // Add to faves/bookmarked
     const addTo = (where: string): void => {
         const seriesObj = {
             name: details.name,
@@ -76,7 +85,7 @@ const getDetailsSerieMarkup = (
     };
 
     const buttonsMarkup = (
-        <div className="flex gap-4 flex-col items-end absolute top-10 right-10">
+        <div className="flex gap-4 justify-center md:justify-start mb-4 md:mb-0 md:flex-col md:items-end md:absolute md:top-10 md:right-10">
             {!isFaved ? (
                 <button
                     onClick={() => addTo("faves")}
@@ -119,15 +128,15 @@ const getDetailsSerieMarkup = (
 
             {/* BIG TITLE */}
             {details.name && (
-                <h2 className="text-6xl font-bold my-10">
+                <h2 className="text-4xl md:text-6xl font-bold my-10">
                     {details.name} ({details.first_air_date.split("-")[0]}-
                     {details.in_production ? "..." : details.last_air_date.split("-")[0]})
                 </h2>
             )}
 
-            <div className="flex w-full relative" style={{ zIndex: 1 }}>
+            <div className="flex flex-wrap md:flex-nowrap w-full relative" style={{ zIndex: 1 }}>
                 {/* LEFT COLUMN */}
-                <div className="w-1/3 p-4" style={{ backgroundColor: `rgba(0,0,0, 0.5)` }}>
+                <div className="w-full md:w-1/4 lg:w-1/3 p-0 md:p-4" style={{ backgroundColor: `rgba(0,0,0, 0.5)` }}>
                     {/* POSTER */}
                     <div className="p-4 rounded shadow ">
                         {/* hover:opacity-0 transition-all duration-200 */}
@@ -149,7 +158,10 @@ const getDetailsSerieMarkup = (
                 </div>
 
                 {/* RIGHT COLUMN */}
-                <div className="w-2/3 p-4 py-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
+                <div
+                    className="relative w-full md:w-3/4 lg:w-2/3 p-0 md:p-4 py-8"
+                    style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}
+                >
                     {buttonsMarkup}
 
                     {/* TITLE */}
@@ -316,7 +328,7 @@ const getDetailsSerieMarkup = (
             <div className="mt-40 relative" style={{ zIndex: 1 }}>
                 {/* TITLE */}
                 <h3 className="text-5xl font-bold my-10">Seasons</h3>
-                <div className="flex space-x-10 mb-6">
+                <div className="flex flex-col space-y-4 md:space-y-0 md:flex-row md:space-x-10 mb-6">
                     {details.number_of_seasons && (
                         <div>
                             <span>Number of seasons: </span> <span>{details.number_of_seasons}</span>
@@ -330,14 +342,14 @@ const getDetailsSerieMarkup = (
                 </div>
 
                 {details.seasons && details.seasons.length > 0 && (
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className={gridStyles}>
                         {details.seasons.map((season: any, i: number) => (
                             <div key={i} className="py-3">
                                 {/* NAME */}
                                 <div className="my-3">{season.name}</div>
 
                                 {/* POSTER */}
-                                <div className="h-[492px]">
+                                <div className="md:h-[492px]">
                                     {season.poster_path ? (
                                         <img
                                             src={"https://image.tmdb.org/t/p/original/" + season.poster_path}
@@ -439,7 +451,7 @@ const getDetailsSerieMarkup = (
             {details.screenshots.backdrops && details.screenshots.backdrops.length > 0 && (
                 <div className="relative" style={{ zIndex: 1 }}>
                     <h3 className="text-5xl font-bold mt-40 mb-20">Gallery</h3>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className={gridStyles}>
                         {details.screenshots.backdrops.slice(0, 20).map((x: any, i: number) => (
                             <div key={i} className="bg-black min-h-[180px] h-auto">
                                 <img src={"https://image.tmdb.org/t/p/original/" + x.file_path} alt="Series screenshot" />
@@ -453,7 +465,7 @@ const getDetailsSerieMarkup = (
             {trailers && trailers.length > 0 && (
                 <div className="relative" style={{ zIndex: 1 }}>
                     <h3 className="text-5xl font-bold mt-40 mb-20">Videos</h3>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className={gridStyles}>
                         {trailers.map((x: any, i: number) => (
                             <div
                                 key={i}
@@ -477,4 +489,4 @@ const getDetailsSerieMarkup = (
     );
 };
 
-export default getDetailsSerieMarkup;
+export default SerieDetails;

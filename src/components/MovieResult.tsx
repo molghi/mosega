@@ -1,4 +1,6 @@
-const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
+import { tmdbMovies, tmdbSeries } from "../utils/genreInterpreter";
+
+const MovieResult = ({ data }: { data: any }) => {
     return (
         <>
             {/* POSTER */}
@@ -15,27 +17,24 @@ const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
             </div>
 
             {/* TITLE */}
-            {data.name && (
-                <div className="pb-1 text-xl font-bold line-clamp-2" title={data.name}>
-                    {data.name}
+            {data.title && (
+                <div className="pb-1 text-xl font-bold line-clamp-2" title={data.title}>
+                    {data.title}
                 </div>
             )}
 
             {/* RELEASE DATE */}
-            {data.first_air_date && (
-                <div className="  pb-1 pt-2  " title={`First Aired: ${data.first_air_date}`}>
-                    <span className="font-bold">First Aired:</span> {data.first_air_date.split("-")[0]}
+            {data.release_date && (
+                <div className="  pb-1 pt-2  " title={`Released: ${data.release_date}`}>
+                    <span className="font-bold">Released:</span> {data.release_date.split("-")[0]}
                 </div>
             )}
 
             {/* GENRES */}
             {data.genre_ids && data.genre_ids.length > 0 && (
-                <div
-                    className="  pb-1 pt-2 line-clamp-2 "
-                    title={`Genres: ${data.genre_ids.map((genreId: number) => tmdbSeries(genreId) || "Unknown").join(", ")}`}
-                >
+                <div className="pb-1 pt-2 line-clamp-2">
                     <span className="font-bold">Genres: </span>
-                    {data.genre_ids.map((genreId: number) => tmdbSeries(genreId) || "Unknown").join(", ")}
+                    {data.genre_ids.map((genreId: number) => tmdbMovies(genreId) || "Unknown").join(", ")}
                 </div>
             )}
 
@@ -64,4 +63,4 @@ const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
     );
 };
 
-export default getDetailsResultSerieMarkup;
+export default MovieResult;

@@ -11,10 +11,10 @@ const Header = () => {
     const navigate = useNavigate();
 
     return (
-        <header className="bg-base-200 mb-7 relative" style={{ zIndex: 1 }}>
+        <header data-name="Header" className="bg-base-200 mb-7 relative" style={{ zIndex: 1 }}>
             <div className="max-w-[1200px] mx-auto">
                 <div className="navbar px-1 py-5 sm:py-6 sm:px-4">
-                    {/* LOGO / SLOGAN */}
+                    {/* LOGO & SLOGAN */}
                     <div className="flex-1 flex items-center">
                         <Link to="/" className="btn btn-ghost normal-case text-3xl">
                             <h1 title="MOvies, SEries, GAmes" className="mr-6 hover:scale-125 transition duration-300">
@@ -28,17 +28,19 @@ const Header = () => {
                     <div className="flex-none space-x-3 mr-3 ">
                         <button
                             className="btn btn-secondary"
-                            title="View titles marked as favorite"
+                            title="View titles marked as favorites"
                             onClick={() => navigate("/favorites")}
                         >
-                            Favorites
+                            <span>Favorites</span>
+                            <span>⭐</span>
                         </button>
                         <button
                             className="btn btn-primary"
-                            title="View bookmarked titles"
+                            title="View your bookmarked titles"
                             onClick={() => navigate("/bookmarked")}
                         >
-                            Bookmarked
+                            <span>Bookmarks</span>
+                            <span>📌</span>
                         </button>
                     </div>
                 </div>

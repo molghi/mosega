@@ -1,4 +1,4 @@
-const getResultGameMarkup = (data: any) => {
+const GameResult = ({ data }: { data: any }) => {
     return (
         <>
             {/* POSTER */}
@@ -86,4 +86,4 @@ const getResultGameMarkup = (data: any) => {
     );
 };
 
-export default getResultGameMarkup;
+export default GameResult;

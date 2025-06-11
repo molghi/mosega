@@ -1,4 +1,6 @@
-const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
+import { tmdbMovies, tmdbSeries } from "../utils/genreInterpreter";
+
+const SerieResult = ({ data }: { data: any }) => {
     return (
         <>
             {/* POSTER */}
@@ -64,4 +66,4 @@ const getDetailsResultSerieMarkup = (data: any, tmdbSeries: any) => {
     );
 };
 
-export default getDetailsResultSerieMarkup;
+export default SerieResult;
