@@ -4,6 +4,7 @@ import { fetchPersonInfo, fetchGenre } from "../utils/smallFetchers";
 import { useContext } from "react";
 import MyContext from "../context/MyContext";
 import { formatBudget, formatDate, formatRuntime } from "../utils/formatters";
+import { tmdbMovies } from "../utils/genreInterpreter";
 
 const setReleased = (details: any) => {
     if (new Date(details.release_date).getFullYear() === new Date().getFullYear()) {
@@ -162,7 +163,7 @@ const MovieDetails = ({ setIsFaved, setIsBooked, isFaved, isBooked, setIsModalOp
                             {details.genres.map((x: any, i: number) => (
                                 <React.Fragment key={i}>
                                     <Link
-                                        to=""
+                                        to={`/genre/${tmdbMovies(x.id).toLowerCase().replaceAll(" ", "-")}`}
                                         className="underline hover:no-underline"
                                         onClick={() => fetchGenre(x.id, setIsLoading, setResults, navigate)}
                                     >
@@ -206,7 +207,10 @@ const MovieDetails = ({ setIsFaved, setIsBooked, isFaved, isBooked, setIsModalOp
                                 .map((x: any, i: number, a: any[]) => (
                                     <React.Fragment key={i}>
                                         <Link
-                                            to=""
+                                            to={`/personality/${x.name
+                                                .toLowerCase()
+                                                .replace(/[^a-zA-Z0-9\- \t]/g, "")
+                                                .replaceAll(" ", "-")}`}
                                             className="underline hover:no-underline"
                                             onClick={() => fetchPersonInfo(x.id, setIsLoading, setPersonData, navigate)}
                                         >
@@ -225,7 +229,10 @@ const MovieDetails = ({ setIsFaved, setIsBooked, isFaved, isBooked, setIsModalOp
                             {details.cast.cast.map((x: any, i: number, a: any) => (
                                 <span key={i}>
                                     <Link
-                                        to=""
+                                        to={`/personality/${x.name
+                                            .toLowerCase()
+                                            .replace(/[^a-zA-Z0-9\- \t]/g, "")
+                                            .replaceAll(" ", "-")}`}
                                         onClick={() => fetchPersonInfo(x.id, setIsLoading, setPersonData, navigate)}
                                         className="underline hover:no-underline"
                                     >
@@ -268,8 +275,8 @@ const MovieDetails = ({ setIsFaved, setIsBooked, isFaved, isBooked, setIsModalOp
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Production Countries:</span>{" "}
                             {details.production_countries.map((x: any, i: number, a: any) => (
-                                <span>
-                                    <span key={i}>{x.name}</span>
+                                <span key={i}>
+                                    <span>{x.name}</span>
                                     {i === a.length - 1 ? "" : ", "}
                                 </span>
                             ))}
@@ -281,8 +288,8 @@ const MovieDetails = ({ setIsFaved, setIsBooked, isFaved, isBooked, setIsModalOp
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Production Companies:</span>{" "}
                             {details.production_companies.map((x: any, i: number, a: any) => (
-                                <span>
-                                    <span key={i}>{x.name}</span>
+                                <span key={i}>
+                                    <span>{x.name}</span>
                                     {i === a.length - 1 ? "" : ", "}
                                 </span>
                             ))}

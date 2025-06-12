@@ -8,7 +8,7 @@ import SerieDetails from "./SerieDetails";
 const Details = () => {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { details, showType, setShowType, gameScreens, favorited, bookmarked } = context;
+    const { details, personData, showType, setShowType, gameScreens, favorited, bookmarked } = context;
 
     if (details.hasOwnProperty("first_air_date")) setShowType(1);
     else if (details.hasOwnProperty("developers")) setShowType(2);

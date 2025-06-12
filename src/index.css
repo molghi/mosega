@@ -16,8 +16,17 @@
 /* =============================================================== */
 
 .swiper-pagination-bullet {
-    background-color: white !important;
+    background-color: silver !important;
     opacity: 1;
+    width: 20px;
+    border-radius: 10px;
+}
+.swiper-pagination-bullet-active {
+    background-color: oklch(71% 0.194 13.428) !important;
+}
+
+.swiper {
+    padding-bottom: 30px;
 }
 
 .swiper-pagination {
@@ -54,3 +63,5 @@
         display: inline-block;
     }
 }
+
+/* =============================================================== */

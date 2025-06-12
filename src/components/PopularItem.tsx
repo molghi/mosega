@@ -8,6 +8,9 @@ import fetchMovie from "../utils/fetchMovie";
 import fetchSerie from "../utils/fetchSerie";
 import fetchGame from "../utils/fetchGame";
 import { useNavigate } from "react-router-dom";
+import MovieResult from "./MovieResult";
+import SerieResult from "./SerieResult";
+import GameResult from "./GameResult";
 
 const PopularItem = ({ type, data }: { type: string; data: any }) => {
     const context = useContext(MyContext);
@@ -23,9 +26,9 @@ const PopularItem = ({ type, data }: { type: string; data: any }) => {
     let resultEl = null; // Final element to be shown
 
     // Get the markup of a movie/serie/game
-    if (type === "movie") resultEl = getResultMovieMarkup(data, tmdbMovies);
-    if (type === "serie") resultEl = getResultSerieMarkup(data, tmdbSeries);
-    if (type === "game") resultEl = getResultGameMarkup(data);
+    if (type === "movie") resultEl = <MovieResult data={data} />; // resultEl = getResultMovieMarkup(data, tmdbMovies);
+    if (type === "serie") resultEl = <SerieResult data={data} />; // resultEl = getResultSerieMarkup(data, tmdbSeries);
+    if (type === "game") resultEl = <GameResult data={data} />; // resultEl = getResultGameMarkup(data);
 
     // Fetch details on click
     const fetchDetails = async () => {

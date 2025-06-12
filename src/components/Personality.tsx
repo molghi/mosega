@@ -9,6 +9,8 @@ const Personality = () => {
 
     const labelStyles: string = "font-bold opacity-70 text-purple-300"; // Define label el styles
 
+    if (Object.keys(data).length === 0) return null;
+
     const type: string = data[0].known_for_department === "Acting" ? "actor" : "director"; // Is it an actor/actress or a director?
 
     const projects: any[] =
@@ -44,19 +46,21 @@ const Personality = () => {
                 {/* RIGHT COLUMN */}
                 <div className="w-full relative md:w-2/3 p-4 pt-8" style={{ backgroundColor: `rgba(0,0,0, 0.4)` }}>
                     {/* BIRTHDAY */}
-                    <div className="p-4 pb-1 pt-2 rounded">
-                        <span className={labelStyles}>Birthday:</span> <span>{data[0].birthday}</span>{" "}
-                        {/* IF NOT DEAD, SHOW AGE NOW */}
-                        {!data[0].deathday && (
-                            <span className="opacity-50">
-                                (
-                                {Math.trunc(
-                                    (new Date().getTime() - new Date(data[0].birthday).getTime()) / 1000 / 60 / 60 / 24 / 365
-                                ) + ` years old`}
-                                )
-                            </span>
-                        )}
-                    </div>
+                    {data[0].birthday && (
+                        <div className="p-4 pb-1 pt-2 rounded">
+                            <span className={labelStyles}>Birthday:</span> <span>{data[0].birthday}</span>{" "}
+                            {/* IF NOT DEAD, SHOW AGE NOW */}
+                            {!data[0].deathday && (
+                                <span className="opacity-50">
+                                    (
+                                    {Math.trunc(
+                                        (new Date().getTime() - new Date(data[0].birthday).getTime()) / 1000 / 60 / 60 / 24 / 365
+                                    ) + ` years old`}
+                                    )
+                                </span>
+                            )}
+                        </div>
+                    )}
 
                     {/* DEATHDAY */}
                     {/* IF DEAD, SHOW AGE AT DEATH */}
@@ -79,14 +83,18 @@ const Personality = () => {
                     )}
 
                     {/* PLACE OF BIRTH */}
-                    <div className="p-4 pb-1 pt-2 rounded">
-                        <span className={labelStyles}>Place of Birth:</span> <span>{data[0].place_of_birth}</span>
-                    </div>
+                    {data[0].place_of_birth && (
+                        <div className="p-4 pb-1 pt-2 rounded">
+                            <span className={labelStyles}>Place of Birth:</span> <span>{data[0].place_of_birth}</span>
+                        </div>
+                    )}
 
                     {/* BIO */}
-                    <div className="p-4 pb-1 pt-2 rounded">
-                        <span className={labelStyles}>Biography:</span> {data[0].biography}
-                    </div>
+                    {data[0].biography && (
+                        <div className="p-4 pb-1 pt-2 rounded">
+                            <span className={labelStyles}>Biography:</span> {data[0].biography}
+                        </div>
+                    )}
                 </div>
             </div>
 

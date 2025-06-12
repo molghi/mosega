@@ -32,7 +32,10 @@ const MovieResult = ({ data }: { data: any }) => {
 
             {/* GENRES */}
             {data.genre_ids && data.genre_ids.length > 0 && (
-                <div className="pb-1 pt-2 line-clamp-2">
+                <div
+                    className="pb-1 pt-2 line-clamp-1"
+                    title={`Genres: ${data.genre_ids.map((genreId: number) => tmdbMovies(genreId) || "Unknown").join(", ")}`}
+                >
                     <span className="font-bold">Genres: </span>
                     {data.genre_ids.map((genreId: number) => tmdbMovies(genreId) || "Unknown").join(", ")}
                 </div>

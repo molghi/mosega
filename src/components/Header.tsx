@@ -16,12 +16,15 @@ const Header = () => {
                 <div className="navbar px-1 py-5 sm:py-6 sm:px-4">
                     {/* LOGO & SLOGAN */}
                     <div className="flex-1 flex items-center">
-                        <Link to="/" className="btn btn-ghost normal-case text-3xl">
+                        <Link
+                            to="/"
+                            className="btn btn-ghost normal-case text-3xl hover:bg-transparent hover:shadow-none active:opacity-70"
+                        >
                             <h1 title="MOvies, SEries, GAmes" className="mr-6 hover:scale-125 transition duration-300">
                                 MoSeGa
                             </h1>
                         </Link>
-                        <span className="text-sm italic hidden md:block">Discover Movies, Series & Games in One Place!</span>
+                        <span className="text-sm italic hidden md:block">Discover Movies, Series, and Games in One Place!</span>
                     </div>
 
                     {/* BUTTONS */}

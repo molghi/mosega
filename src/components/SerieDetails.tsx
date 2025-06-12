@@ -176,7 +176,7 @@ const SerieDetails = ({
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Genres:</span>{" "}
                             {details.genres.map((x: any, i: number) => (
-                                <React.Fragment>
+                                <React.Fragment key={i}>
                                     <Link
                                         to=""
                                         className="underline hover:no-underline"
@@ -218,7 +218,7 @@ const SerieDetails = ({
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Created By:</span>{" "}
                             {details.created_by.map((x: any, i: number, a: any) => (
-                                <>
+                                <React.Fragment key={i}>
                                     <Link
                                         to=""
                                         onClick={() => fetchPersonInfo(x.id, setIsLoading, setPersonData, navigate)}
@@ -227,7 +227,7 @@ const SerieDetails = ({
                                         {x.name}
                                     </Link>
                                     {i === a.length - 1 ? "" : ", "}
-                                </>
+                                </React.Fragment>
                             ))}
                         </div>
                     )}
@@ -239,7 +239,10 @@ const SerieDetails = ({
                             {details.cast.cast.map((x: any, i: number, a: any) => (
                                 <span key={i}>
                                     <Link
-                                        to=""
+                                        to={`/personality/${x.name
+                                            .toLowerCase()
+                                            .replace(/[^a-zA-Z0-9\- \t]/g, "")
+                                            .replaceAll(" ", "-")}`}
                                         onClick={() => fetchPersonInfo(x.id, setIsLoading, setPersonData, navigate)}
                                         className="underline hover:no-underline"
                                     >
@@ -256,7 +259,12 @@ const SerieDetails = ({
                     {details.production_countries && details.production_countries.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Production Countries:</span>{" "}
-                            {details.production_countries.map((x: any) => x.name).join(", ")}
+                            {details.production_countries.map((x: any, i: number, a: any) => (
+                                <React.Fragment key={i}>
+                                    {x.name}
+                                    {i === a.length - 1 ? "" : ", "}
+                                </React.Fragment>
+                            ))}
                         </div>
                     )}
 
@@ -264,7 +272,12 @@ const SerieDetails = ({
                     {details.production_companies && details.production_companies.length > 0 && (
                         <div className="p-4 pb-1 pt-2 rounded">
                             <span className={labelStyles}>Production Companies:</span>{" "}
-                            {details.production_companies.map((x: any) => x.name).join(", ")}
+                            {details.production_companies.map((x: any, i: number, a: any) => (
+                                <React.Fragment key={i}>
+                                    {x.name}
+                                    {i === a.length - 1 ? "" : ", "}
+                                </React.Fragment>
+                            ))}
                         </div>
                     )}
 
@@ -382,6 +395,7 @@ const SerieDetails = ({
                                     <div>
                                         {epsData[season.season_number - 1]?.map((ep: any, i: number) => (
                                             <div
+                                                key={i}
                                                 className="relative underline hover:no-underline cursor-pointer"
                                                 onMouseEnter={() => {
                                                     const seasonEpsObj = details.episodesData[season.season_number - 1].episodes;
@@ -396,7 +410,6 @@ const SerieDetails = ({
                                                     setIsHovered("");
                                                     setHoveredIndex(null);
                                                 }}
-                                                key={i}
                                             >
                                                 {ep.replace(" (nullm)", "")}
 

@@ -10,8 +10,8 @@ export const fetchPersonInfo = async (personId: string, setIsLoading: any, setPe
     const data: any = await fetchCastCrew(import.meta.env.VITE_TMDB_API_KEY, personId);
     setIsLoading(false);
     setPersonData(data);
-    const nameSluggified = data[0].name.toLowerCase().replaceAll(" ", "-");
-    navigate(`/personality/${nameSluggified}`);
+    // const nameSluggified = data[0].name.toLowerCase().replaceAll(" ", "-");
+    // navigate(`/personality/${nameSluggified}`);
 };
 
 // ========================================================================================
@@ -22,6 +22,6 @@ export const fetchGenre = async (genreId: string, setIsLoading: any, setResults:
     const data = await fetchByGenre(import.meta.env.VITE_TMDB_API_KEY, genreId, "movie");
     setIsLoading(false);
     setResults(data);
-    const genreNameSluggified = tmdbMovies(+genreId).toLowerCase().replaceAll(" ", "-");
-    navigate(`/genre/${genreNameSluggified}`);
+    // const genreNameSluggified = tmdbMovies(+genreId).toLowerCase().replaceAll(" ", "-");
+    // navigate(`/genre/${genreNameSluggified}`);
 };

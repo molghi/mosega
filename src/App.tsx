@@ -13,11 +13,12 @@ import BookmarkedPage from "./pages/BookmarkedPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import Personality from "./components/Personality";
 import Genre from "./components/Genre";
+import { tmdbMovies, tmdbSeries } from "./utils/genreInterpreter";
 
 function App() {
     const context = useContext(MyContext);
     if (!context) throw new Error("Error using Context"); // Null check
-    const { isLoading, setPopularNow } = context;
+    const { details, results, personData, isLoading, setPopularNow } = context;
 
     const { pathname } = useLocation();
     const [scrollToTop, setScrollToTop] = useState<boolean>(false);
@@ -47,6 +48,35 @@ function App() {
         document.addEventListener("scroll", listenToScroll);
         return () => document.removeEventListener("scroll", listenToScroll);
     }, []);
+
+    // Change document title on url change
+    useEffect(() => {
+        let name = "MoSeGa | Movies, Series & Games in One Place";
+        if (pathname.includes("/personality") && personData[0]) {
+            console.log(personData[0]);
+
+            name = personData[0].name; // this here is always one step in the past
+            name += " | MoSeGa";
+        }
+        if (pathname.includes("/details")) {
+            name = details.title ? details.title : details.name;
+            name += `${
+                details.release_date
+                    ? ` (${details.release_date.slice(0, 4)})`
+                    : details.first_air_date
+                    ? ` (${details.first_air_date.slice(0, 4)})`
+                    : ` (${details.released.slice(0, 4)})`
+            }`;
+            name += " | MoSeGa";
+        }
+        if (pathname.includes("/genre")) {
+            name = `Popular in ${tmdbMovies(results.genre)} | MoSeGa`;
+        }
+        if (pathname === "/") {
+            name = "MoSeGa | Movies, Series & Games in One Place";
+        }
+        document.title = name;
+    }, [pathname, personData, details, results]);
 
     return (
         <>

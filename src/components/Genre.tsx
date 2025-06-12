@@ -10,6 +10,8 @@ const Genre = () => {
 
     const labelStyles = "font-bold opacity-70 text-purple-300";
 
+    if (results.length === 0) return null;
+
     return (
         <section data-name="Genre" className={containerStyles}>
             {/* BIG TITLE */}
@@ -26,7 +28,7 @@ const Genre = () => {
                 <div>
                     <span className={labelStyles}>Results:</span>{" "}
                     <span>
-                        {results.results.length * results.page}/{results.total_results}
+                        {results.results?.length * results.page}/{results.total_results}
                     </span>
                 </div>
             </div>

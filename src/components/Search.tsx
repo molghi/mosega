@@ -65,12 +65,12 @@ const Search = () => {
     return (
         <section data-name="Search" className={`${containerStyles} mb-5`}>
             <div className="max-w-2xl mx-auto">
-                <div className="flex flex-col sm:flex-row sm:space-x-8">
+                <div className="flex flex-col items-center mb-5 sm:flex-row sm:space-x-8">
                     {/* TITLE */}
-                    <h2 className="text-4xl font-bold mb-5">Search</h2>
+                    <h2 className="text-4xl font-bold">Search</h2>
 
                     {/* TABS */}
-                    <div className="tabs tabs-boxed mb-4">
+                    <div className="tabs tabs-boxed">
                         {searchOptions.map((name, index) => {
                             const activityClass =
                                 index === activeTab ? "tab-active bg-primary" : "hover:bg-primary hover:opacity-70";
@@ -93,7 +93,7 @@ const Search = () => {
                         ref={inputEl}
                         type="text"
                         placeholder="Search..."
-                        className="input input-bordered border-2 focus:border-primary focus:outline-none flex-grow w-full"
+                        className="input input-bordered border-2 focus:border-primary focus:outline-none flex-grow w-full h-auto"
                         autoFocus
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
