@@ -1,6 +1,8 @@
-const fetchMovies = async (API_KEY: string, query: string) => {
+const fetchMovies = async (API_KEY: string, query: string, page: number = 1) => {
     try {
-        const API_URL: string = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}`;
+        const API_URL: string = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(
+            query
+        )}&page=${page}`;
 
         const resp = await fetch(API_URL);
 

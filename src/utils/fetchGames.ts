@@ -1,6 +1,6 @@
-const fetchGames = async (API_KEY: string, query: string) => {
+const fetchGames = async (API_KEY: string, query: string, page: number = 1) => {
     try {
-        const API_URL: string = `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}&key=${API_KEY}`;
+        const API_URL: string = `https://api.rawg.io/api/games?search=${encodeURIComponent(query)}&key=${API_KEY}&page=${page}`;
 
         const resp = await fetch(API_URL);
 

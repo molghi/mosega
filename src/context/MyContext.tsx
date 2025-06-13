@@ -72,7 +72,7 @@ export const ContextProvider = ({ children }: ContextProviderProps) => {
 
     const containerStyles: string = "max-w-[1200px] mx-auto px-2 sm:px-4 py-6 pb-30"; // tailwind topmost container styles
 
-    const gridStyles: string = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 pb-60";
+    const gridStyles: string = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 pb-20";
 
     // sluggify a string
     const sluggify = (value: string): string =>

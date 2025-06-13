@@ -27,7 +27,7 @@ const GameResult = ({ data }: { data: any }) => {
             {/* GENRES */}
             {data.genres && data.genres.length > 0 && (
                 <div
-                    className="mb-1 mt-2 line-clamp-2"
+                    className="mb-1 mt-2 line-clamp-1"
                     title={`Genres: ${data.genres.map((genre: { id: number; name: string }) => genre.name).join(", ")}`}
                 >
                     <span className="font-bold">Genres: </span>

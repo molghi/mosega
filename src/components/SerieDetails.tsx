@@ -220,7 +220,10 @@ const SerieDetails = ({
                             {details.created_by.map((x: any, i: number, a: any) => (
                                 <React.Fragment key={i}>
                                     <Link
-                                        to=""
+                                        to={`/personality/${x.name
+                                            .toLowerCase()
+                                            .replace(/[^a-zA-Z0-9\- \t]/g, "")
+                                            .replaceAll(" ", "-")}`}
                                         onClick={() => fetchPersonInfo(x.id, setIsLoading, setPersonData, navigate)}
                                         className="underline hover:no-underline"
                                     >
